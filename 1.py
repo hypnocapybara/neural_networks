@@ -45,7 +45,8 @@ def main():
         model = get_model()
         train_and_save(model)
 
-    files = [f for f in os.listdir('images')]
+    # files = [f for f in os.listdir('images')]
+    files = ['dog5.jpg', 'dog6.jpg']
     for f in files:
         img = load_img(os.path.join('images', f))
         img_array = img_to_array(img)
