@@ -14,5 +14,5 @@ class Neuron:
     def feed_forward(self, inputs: List[float]):
         assert len(inputs) == len(self.weights)
         return self.activation_function(
-            sum([inputs[i] * self.weights[i] for i in range(len(inputs))])
+            sum([inputs[i] * self.weights[i] for i in range(len(inputs))]) + self.bias
         )

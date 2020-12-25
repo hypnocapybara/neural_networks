@@ -17,7 +17,17 @@ def main():
     # print(out)
 
     net = Net([2, 2, 1])
-    print(net.feed_forward([2, 3]))
+    train_data = [
+        [-2, -1],  # Alice
+        [25, 6],  # Bob
+        [17, 4],  # Charlie
+        [-15, -6],  # Diana
+    ]
+    answers = [[1.0], [0.0], [0.0], [1.0]]
+    net.train(train_data, answers)
+
+    print(net.feed_forward([-7, -3]))
+    print(net.feed_forward([20, 2]))
 
 
 if __name__ == '__main__':
