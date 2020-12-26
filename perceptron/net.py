@@ -1,5 +1,5 @@
 import math
-from functools import reduce
+import random
 from typing import List
 
 from .neuron import Neuron
@@ -30,13 +30,14 @@ class Net:
         assert len(structure) > 2
 
         for i in range(1, len(structure)):
-            input_weights = [0.5] * structure[i-1]
-            layer = [Neuron(input_weights, 0) for _g in range(structure[i])]
+            input_weights = [random.random()] * structure[i-1]
+            layer = [Neuron(input_weights, random.random()) for _g in range(structure[i])]
             self.neurons.append(layer)
 
     def feed_forward(self, inputs: List[float]) -> List[float]:
         assert len(self.neurons) > 0
-        assert len(inputs) == len(self.neurons[0])
+        assert len(self.neurons[0]) > 0
+        assert len(inputs) == len(self.neurons[0][0].weights)
 
         next_inputs = inputs
         for layer in self.neurons:
@@ -46,7 +47,7 @@ class Net:
 
     def train(self, values: List[List[float]], answers: List[List[float]]):
         learn_rate = 0.1
-        epochs = 1000  # number of times to loop through the entire dataset
+        epochs = 5
 
         for epoch in range(epochs):
             for data, answer in zip(values, answers):
@@ -69,7 +70,10 @@ class Net:
                     next_inputs = next_results_layer
 
                 # derivative for MSE of answers
-                d_answer = -2 * math.prod([(answer[i] - next_inputs[i]) for i in range(len(answer))]) / len(answer)
+                d_answer = -2 * math.prod([
+                    (answer[i] - next_inputs[i])
+                    for i in range(len(answer))
+                ]) / len(answer)
 
                 for i in reversed(range(len(self.neurons))):
                     layer = self.neurons[i]
@@ -77,6 +81,15 @@ class Net:
                         inputs = neurons_results[i-1] if i > 0 else data
                         weights = neuron.weights
                         for g in range(len(weights)):
-                            weights[g] -= learn_rate * d_answer * inputs[g] * deriv_sigmoid(neurons_summs[i][neuron_index])
+                            weights[g] -= (
+                                learn_rate * d_answer * inputs[g] *
+                                deriv_sigmoid(neurons_summs[i][neuron_index])
+                            )
 
-                        neuron.bias -= learn_rate * d_answer * deriv_sigmoid(neurons_summs[i][neuron_index])
+                        neuron.bias -= (
+                            learn_rate * d_answer *
+                            deriv_sigmoid(neurons_summs[i][neuron_index])
+                        )
+
+            if epoch % 100 == 0:
+                print("Epoch %s" % epoch)
